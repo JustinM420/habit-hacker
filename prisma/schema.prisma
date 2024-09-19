@@ -1,0 +1,78 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Task {
+  id              Int       @id @default(autoincrement())
+  title           String
+  description     String?
+  completed       Boolean   @default(false)
+  frequency       Frequency?
+  recurring       Boolean   @default(false)
+  specificDate    DateTime?
+  specificTime    String?
+  completedAt     DateTime[] @default([])
+  completionCount Int       @default(0) // This should be present in your schema
+  missedCount     Int       @default(0) // This should also be present
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  archived        Boolean   @default(false)
+  userId          String    
+}
+
+enum Frequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  ONE_OFF
+}
+
+
+model Coach {
+  id            String @id @default(uuid())
+  userId        String @unique
+  name          String
+  description   String
+  instructions  String
+  seed          String 
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  messages      Message[]
+
+}
+
+enum Role {
+  user
+  system
+}
+
+model Message {
+  id          String @id @default(uuid())
+  role        Role
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  coachId String
+  userId      String
+
+  coach   Coach @relation(fields: [coachId], references: [id], onDelete: Cascade)
+
+  @@index([coachId])
+}
+
+model UserSubscription {
+  id                      String @id @default(uuid())
+  userId                  String @unique
+  stripeCustomerId        String? @unique @map(name: "stripe_customer_id")
+  stripeSubscriptionId    String? @unique @map(name: "stripe_subscription_id")
+  stripePriceId           String? @unique @map(name: "stripe_price_id")
+  stripeCurrentPeriodEnd  DateTime? @unique @map(name: "stripe_current_period_end")
+}
