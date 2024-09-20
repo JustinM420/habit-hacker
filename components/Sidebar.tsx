@@ -7,10 +7,10 @@ import { CalendarCheck, Home, MessageCircleMore, Settings } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 interface SidebarProps {
-    onOptionSelect: () => void;
+    onOptionSelect?: () => void; // Make it optional
 }
 
-export const Sidebar = ({ onOptionSelect }: SidebarProps) => {
+export const Sidebar = ({ onOptionSelect = () => {} }: SidebarProps) => { // Provide default no-op function
     const pathname = usePathname();
     const router = useRouter();
 
@@ -60,6 +60,13 @@ export const Sidebar = ({ onOptionSelect }: SidebarProps) => {
                                 "text-muted-foreground text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
                                 pathname === route.href && "text-primary bg-primary/10"
                             )}
+                            role="button" // Accessibility enhancement
+                            tabIndex={0} // Make it focusable
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    onNavigate(route.href, route.pro);
+                                }
+                            }}
                         >
                             <div className="flex flex-col gap-y-2 items-center flex-1">
                                 <route.icon className="h-5 w-5" />
