@@ -1,11 +1,16 @@
-'use client'
+// components/Sidebar.tsx
 
-import { cn } from "@/lib/utils"
-import { CalendarCheck, Home, MessageCircleMore, Settings } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
+'use client';
 
-export const Sidebar = () => {
+import { cn } from "@/lib/utils";
+import { CalendarCheck, Home, MessageCircleMore, Settings } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 
+interface SidebarProps {
+    onOptionSelect: () => void;
+}
+
+export const Sidebar = ({ onOptionSelect }: SidebarProps) => {
     const pathname = usePathname();
     const router = useRouter();
 
@@ -37,12 +42,11 @@ export const Sidebar = () => {
     ];
 
     const onNavigate = (url: string, pro: boolean) => {
-        // TODO: Check if Pro 
+        // TODO: Check if Pro
 
-        return router.push(url);
-    }
-
-
+        router.push(url);
+        onOptionSelect(); // Close the sidebar after navigation
+    };
 
     return (
         <div className="space-y-4 flex flex-col h-full text-primary bg-secondary">
@@ -52,12 +56,13 @@ export const Sidebar = () => {
                         <div
                             onClick={() => onNavigate(route.href, route.pro)}
                             key={route.href}
-                            className={cn("text-muted-foreground text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
+                            className={cn(
+                                "text-muted-foreground text-xs group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
                                 pathname === route.href && "text-primary bg-primary/10"
                             )}
                         >
                             <div className="flex flex-col gap-y-2 items-center flex-1">
-                                <route.icon className="h-5 w-5"/>
+                                <route.icon className="h-5 w-5" />
                                 {route.label}
                             </div>
                         </div>
@@ -65,5 +70,5 @@ export const Sidebar = () => {
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
